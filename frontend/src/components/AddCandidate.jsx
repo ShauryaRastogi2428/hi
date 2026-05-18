@@ -10,6 +10,7 @@ export default function AddCandidate() {
   });
 
   const [loading, setLoading] = useState(false);
+  const [success, setSuccess] = useState("");
 
   const handleChange = (e) => {
     setForm({ ...form, [e.target.name]: e.target.value });
@@ -23,6 +24,7 @@ export default function AddCandidate() {
 
     try {
       setLoading(true);
+      setSuccess("");
 
       const payload = {
         name: form.name,
@@ -33,9 +35,9 @@ export default function AddCandidate() {
 
       const res = await api.post("/candidates", payload);
 
-      console.log("SUCCESS RESPONSE:", res.data);
+      console.log("SUCCESS:", res.data);
 
-      alert(res.data?.message || "Candidate Added ✅");
+      setSuccess("✅ Candidate added successfully!");
 
       setForm({
         name: "",
@@ -45,33 +47,64 @@ export default function AddCandidate() {
       });
 
     } catch (err) {
-      console.log("❌ FULL ERROR:", err);
-      console.log("❌ RESPONSE:", err.response?.data);
-      console.log("❌ STATUS:", err.response?.status);
-      console.log("❌ MESSAGE:", err.message);
-
-      alert(
-        err.response?.data?.message ||
-        err.message ||
-        "Backend Error ❌"
-      );
+      console.log("❌ ERROR:", err.response?.data || err.message);
+      alert(err.response?.data?.message || "Backend Error ❌");
     } finally {
       setLoading(false);
     }
   };
 
   return (
-    <div>
-      <h2>Add Candidate</h2>
+    <div className="formBox">
 
-      <input name="name" value={form.name} onChange={handleChange} placeholder="Name" />
-      <input name="email" value={form.email} onChange={handleChange} placeholder="Email" />
-      <input name="skills" value={form.skills} onChange={handleChange} placeholder="Skills (React, Node)" />
-      <input name="experience" value={form.experience} onChange={handleChange} placeholder="Experience" />
+      <h2 className="title">➕ Add Candidate</h2>
 
-      <button onClick={submit} disabled={loading}>
-        {loading ? "Adding..." : "Add Candidate"}
+      <input
+        className="input"
+        name="name"
+        value={form.name}
+        onChange={handleChange}
+        placeholder="Full Name"
+      />
+
+      <input
+        className="input"
+        name="email"
+        value={form.email}
+        onChange={handleChange}
+        placeholder="Email Address"
+      />
+
+      <input
+        className="input"
+        name="skills"
+        value={form.skills}
+        onChange={handleChange}
+        placeholder="Skills (React, Node, MongoDB)"
+      />
+
+      <input
+        className="input"
+        name="experience"
+        value={form.experience}
+        onChange={handleChange}
+        placeholder="Experience (Years)"
+      />
+
+      <button
+        className="addBtn"
+        onClick={submit}
+        disabled={loading}
+      >
+        {loading ? "⏳ Adding Candidate..." : "🚀 Add Candidate"}
       </button>
+
+      {success && (
+        <div className="successBox">
+          {success}
+        </div>
+      )}
+
     </div>
   );
 }

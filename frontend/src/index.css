@@ -1,0 +1,33 @@
+
+body {
+  margin: 0;
+  padding: 0;
+  background: #020617;
+  font-family: "Segoe UI", sans-serif;
+  overflow-x: hidden;
+}
+
+/* SMOOTH SCROLL */
+html {
+  scroll-behavior: smooth;
+}
+
+/* SELECTION COLOR */
+::selection {
+  background: #4dabf7;
+  color: white;
+}
+
+/* SCROLLBAR (OPTIONAL BUT BEAUTIFUL) */
+::-webkit-scrollbar {
+  width: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background: #0f172a;
+}
+
+::-webkit-scrollbar-thumb {
+  background: linear-gradient(180deg, #4dabf7, #51cf66);
+  border-radius: 10px;
+}

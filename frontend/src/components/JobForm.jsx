@@ -6,17 +6,19 @@ export default function JobForm() {
   const [loading, setLoading] = useState(false);
   const [result, setResult] = useState(null);
 
+  const parseSkills = (str) =>
+    str.split(",").map(s => s.trim()).filter(Boolean);
+
   const basicMatch = async () => {
     try {
       setLoading(true);
 
       const res = await api.post("/match", {
-        requiredSkills: skills.split(",").map(s => s.trim()),
+        requiredSkills: parseSkills(skills),
         minExperience: 1
       });
 
-      console.log("Basic Match:", res.data);
-      setResult(res.data);
+      setResult({ type: "basic", data: res.data });
 
     } catch (err) {
       console.error(err);
@@ -31,12 +33,11 @@ export default function JobForm() {
       setLoading(true);
 
       const res = await api.post("/ai/shortlist", {
-        requiredSkills: skills.split(",").map(s => s.trim()),
+        requiredSkills: parseSkills(skills),
         minExperience: 1
       });
 
-      console.log("AI Match:", res.data);
-      setResult(res.data);
+      setResult({ type: "ai", data: res.data });
 
     } catch (err) {
       console.error(err);
@@ -47,28 +48,82 @@ export default function JobForm() {
   };
 
   return (
-    <div>
-      <h2>Job Matching</h2>
+    <div className="jobBox">
 
+      {/* TITLE */}
+      <h2 className="title">🎯 AI Job Matching Engine</h2>
+
+      {/* INPUT */}
       <input
-        placeholder="Required Skills (React, Node)"
+        className="input"
+        placeholder="Enter skills (React, Node, MongoDB)"
         value={skills}
         onChange={(e) => setSkills(e.target.value)}
       />
 
-      <button onClick={basicMatch} disabled={loading}>
-        Basic Match
-      </button>
+      {/* BUTTONS */}
+      <div className="btnGroup">
 
-      <button onClick={aiMatch} disabled={loading}>
-        AI Match
-      </button>
+        <button className="basicBtn" onClick={basicMatch} disabled={loading}>
+          ⚡ Basic Match
+        </button>
 
-      {result && (
-        <pre style={{ marginTop: "20px" }}>
-          {JSON.stringify(result, null, 2)}
-        </pre>
+        <button className="aiBtn" onClick={aiMatch} disabled={loading}>
+          🧠 AI Match
+        </button>
+
+      </div>
+
+      {/* LOADING */}
+      {loading && (
+        <div className="loading">
+          🔄 AI analyzing candidates...
+        </div>
       )}
+
+      {/* RESULT */}
+      {result && (
+        <div className="resultBox">
+
+          {/* BASIC MATCH UI */}
+          {result.type === "basic" && (
+            <>
+              <h3 className="sectionTitle">⚡ Basic Matching Results</h3>
+
+              <div className="gridCards">
+                {result.data.map((c, i) => (
+                  <div key={i} className="card glowCard">
+                    <div className="badge">#{i + 1}</div>
+
+                    <p><b>👤 Name:</b> {c.name}</p>
+                    <p><b>📧 Email:</b> {c.email}</p>
+
+                    <div className="score">
+                      ⚡ Match Score:
+                      <span className="highlight">
+                        {Math.round(c.matchScore * 100)}%
+                      </span>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </>
+          )}
+
+          {/* AI MATCH UI */}
+          {result.type === "ai" && (
+            <>
+              <h3 className="sectionTitle">🧠 AI Shortlisted Candidates</h3>
+
+              <div className="aiBox fancyAI">
+                {result.data?.choices?.[0]?.message?.content || "No AI response"}
+              </div>
+            </>
+          )}
+
+        </div>
+      )}
+
     </div>
   );
 }
