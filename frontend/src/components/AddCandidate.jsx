@@ -24,18 +24,19 @@ export default function AddCandidate() {
     try {
       setLoading(true);
 
-      const res = await api.post("/candidates", {
+      const payload = {
         name: form.name,
         email: form.email,
         skills: form.skills.split(",").map(s => s.trim()),
         experience: Number(form.experience)
-      });
+      };
 
-      console.log("Response:", res.data);
+      const res = await api.post("/candidates", payload);
 
-      alert("Candidate Added ✅");
+      console.log("SUCCESS RESPONSE:", res.data);
 
-      // reset form
+      alert(res.data?.message || "Candidate Added ✅");
+
       setForm({
         name: "",
         email: "",
@@ -44,8 +45,16 @@ export default function AddCandidate() {
       });
 
     } catch (err) {
-      console.error("Error adding candidate:", err);
-      alert("Failed to add candidate ❌ Check backend/API");
+      console.log("❌ FULL ERROR:", err);
+      console.log("❌ RESPONSE:", err.response?.data);
+      console.log("❌ STATUS:", err.response?.status);
+      console.log("❌ MESSAGE:", err.message);
+
+      alert(
+        err.response?.data?.message ||
+        err.message ||
+        "Backend Error ❌"
+      );
     } finally {
       setLoading(false);
     }
@@ -55,33 +64,10 @@ export default function AddCandidate() {
     <div>
       <h2>Add Candidate</h2>
 
-      <input
-        name="name"
-        placeholder="Name"
-        value={form.name}
-        onChange={handleChange}
-      />
-
-      <input
-        name="email"
-        placeholder="Email"
-        value={form.email}
-        onChange={handleChange}
-      />
-
-      <input
-        name="skills"
-        placeholder="Skills (React, Node)"
-        value={form.skills}
-        onChange={handleChange}
-      />
-
-      <input
-        name="experience"
-        placeholder="Experience"
-        value={form.experience}
-        onChange={handleChange}
-      />
+      <input name="name" value={form.name} onChange={handleChange} placeholder="Name" />
+      <input name="email" value={form.email} onChange={handleChange} placeholder="Email" />
+      <input name="skills" value={form.skills} onChange={handleChange} placeholder="Skills (React, Node)" />
+      <input name="experience" value={form.experience} onChange={handleChange} placeholder="Experience" />
 
       <button onClick={submit} disabled={loading}>
         {loading ? "Adding..." : "Add Candidate"}

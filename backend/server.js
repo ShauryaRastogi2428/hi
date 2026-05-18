@@ -14,17 +14,39 @@ const app = express();
 ======================= */
 app.use(cors({
   origin: "*",
-  methods: ["GET", "POST", "PUT", "DELETE"],
+  methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
 }));
 
 app.use(express.json());
 
 /* =======================
-   DATABASE CONNECTION
+   HEALTH CHECK (IMPORTANT FOR RENDER)
 ======================= */
-mongoose.connect(process.env.MONGO_URL)
-  .then(() => console.log("MongoDB connected"))
-  .catch((err) => console.log("MongoDB error:", err));
+app.get("/", (req, res) => {
+  res.send("Backend is running 🚀");
+});
+
+/* =======================
+   DATABASE CONNECTION (FIXED)
+======================= */
+const connectDB = async () => {
+  try {
+    await mongoose.connect(process.env.MONGO_URL);
+    console.log("MongoDB connected");
+
+    // ONLY START SERVER AFTER DB CONNECTS
+    const PORT = process.env.PORT || 5000;
+
+    app.listen(PORT, () => {
+      console.log(`Server running on port ${PORT}`);
+    });
+
+  } catch (err) {
+    console.error("MongoDB connection error:", err);
+  }
+};
+
+connectDB();
 
 /* =======================
    ROUTES
@@ -32,12 +54,3 @@ mongoose.connect(process.env.MONGO_URL)
 app.use("/api/candidates", candidateRoutes);
 app.use("/api/match", matchRoutes);
 app.use("/api/ai", aiRoutes);
-
-/* =======================
-   SERVER START
-======================= */
-const PORT = process.env.PORT || 5000;
-
-app.listen(PORT, () =>
-  console.log(`Server running on port ${PORT}`)
-);

@@ -6,6 +6,8 @@ const Candidate = require("../models/Candidate");
 ========================= */
 router.post("/", async (req, res) => {
   try {
+    console.log("REQUEST BODY:", req.body);
+
     const data = await Candidate.create(req.body);
 
     return res.status(201).json({
@@ -15,12 +17,11 @@ router.post("/", async (req, res) => {
     });
 
   } catch (err) {
-    console.error("Add Candidate Error:", err);
+    console.error("ADD ERROR:", err);
 
     return res.status(500).json({
       success: false,
-      message: "Failed to add candidate",
-      error: err.message
+      message: err.message
     });
   }
 });
@@ -38,12 +39,9 @@ router.get("/", async (req, res) => {
     });
 
   } catch (err) {
-    console.error("Fetch Candidates Error:", err);
-
     return res.status(500).json({
       success: false,
-      message: "Failed to fetch candidates",
-      error: err.message
+      message: err.message
     });
   }
 });
