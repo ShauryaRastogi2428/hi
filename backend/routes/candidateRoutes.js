@@ -1,14 +1,51 @@
 const router = require("express").Router();
 const Candidate = require("../models/Candidate");
 
+/* =========================
+   ADD CANDIDATE
+========================= */
 router.post("/", async (req, res) => {
-  const data = await Candidate.create(req.body);
-  res.json(data);
+  try {
+    const data = await Candidate.create(req.body);
+
+    return res.status(201).json({
+      success: true,
+      message: "Candidate added successfully",
+      data
+    });
+
+  } catch (err) {
+    console.error("Add Candidate Error:", err);
+
+    return res.status(500).json({
+      success: false,
+      message: "Failed to add candidate",
+      error: err.message
+    });
+  }
 });
 
+/* =========================
+   GET ALL CANDIDATES
+========================= */
 router.get("/", async (req, res) => {
-  const data = await Candidate.find();
-  res.json(data);
+  try {
+    const data = await Candidate.find();
+
+    return res.status(200).json({
+      success: true,
+      data
+    });
+
+  } catch (err) {
+    console.error("Fetch Candidates Error:", err);
+
+    return res.status(500).json({
+      success: false,
+      message: "Failed to fetch candidates",
+      error: err.message
+    });
+  }
 });
 
 module.exports = router;
