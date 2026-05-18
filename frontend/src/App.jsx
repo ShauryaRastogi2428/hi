@@ -1,5 +1,5 @@
-import AddCandidate from "./components/AddCandidate";
-import JobForm from "./components/JobForm";
+import AddCandidate from "./components/AddCandidate.jsx";
+import JobForm from "./components/JobForm.jsx";
 
 export default function App() {
   return (
